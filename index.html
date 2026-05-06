@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>University Student Records Management System - CUU Students</title>
+    <title>University Student Records Management System - CUU University</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
@@ -18,7 +18,6 @@
             min-height: 100vh;
         }
 
-        /* Login Styles */
         .login-container {
             display: flex;
             justify-content: center;
@@ -115,6 +114,15 @@
             font-size: 12px;
         }
 
+        .demo-credentials p {
+            margin: 5px 0;
+        }
+
+        .demo-credentials i {
+            width: 20px;
+            color: #667eea;
+        }
+
         .error-message {
             color: #e74c3c;
             margin-top: 10px;
@@ -122,7 +130,6 @@
             font-size: 14px;
         }
 
-        /* Navbar Styles */
         .navbar {
             background: white;
             padding: 15px 30px;
@@ -160,7 +167,6 @@
             background: #ff3838;
         }
 
-        /* Dashboard Styles */
         .dashboard-container {
             padding: 20px;
             max-width: 1400px;
@@ -175,7 +181,6 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        /* Student Profile Card */
         .student-profile-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 20px;
@@ -207,11 +212,6 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-
-        .student-avatar i {
-            font-size: 80px;
-            color: #667eea;
         }
 
         .camera-icon {
@@ -288,7 +288,6 @@
             color: #333;
         }
 
-        /* Table Styles */
         .data-table {
             background: white;
             border-radius: 15px;
@@ -325,7 +324,6 @@
             background: #f5f5f5;
         }
 
-        /* Form Styles */
         .form-card {
             background: white;
             padding: 20px;
@@ -385,7 +383,6 @@
             cursor: pointer;
         }
 
-        /* Alert Styles */
         .alert {
             padding: 15px;
             border-radius: 8px;
@@ -422,7 +419,6 @@
         .badge-danger { background: #e74c3c; }
         .badge-info { background: #3498db; }
 
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -462,7 +458,6 @@
     </style>
 </head>
 <body>
-    <!-- Login Container -->
     <div class="login-container" id="loginContainer">
         <div class="login-box">
             <div class="university-logo">
@@ -484,18 +479,19 @@
                 <div id="loginError" class="error-message"></div>
             </form>
             <div class="demo-credentials">
-                <strong><i class="fas fa-info-circle"></i> Login Credentials:</strong><br>
-                <i class="fas fa-user-shield"></i> <strong>Admin:</strong> aine / aine123<br>
-                <i class="fas fa-user-graduate"></i> <strong>Student:</strong> CUU001 / student123<br>
-                <i class="fas fa-user-graduate"></i> <strong>Student:</strong> CUU002 / student123<br>
-                <i class="fas fa-chalkboard-user"></i> <strong>Lecturer:</strong> lecturer1 / lecturer123<br>
-                <i class="fas fa-coins"></i> <strong>Finance:</strong> finance1 / finance123<br>
-                <i class="fas fa-clipboard-list"></i> <strong>Registry:</strong> registry1 / registry123
+                <strong><i class="fas fa-info-circle"></i> LOGIN CREDENTIALS:</strong>
+                <p><i class="fas fa-user-shield"></i> <strong>Admin:</strong> aine / aine123</p>
+                <p><i class="fas fa-user-graduate"></i> <strong>Student 1:</strong> CUU001 / student123</p>
+                <p><i class="fas fa-user-graduate"></i> <strong>Student 2:</strong> CUU002 / student123</p>
+                <p><i class="fas fa-chalkboard-user"></i> <strong>Lecturer:</strong> lecturer1 / lecturer123</p>
+                <p><i class="fas fa-coins"></i> <strong>Finance:</strong> finance1 / finance123</p>
+                <p><i class="fas fa-clipboard-list"></i> <strong>Registry:</strong> registry1 / registry123</p>
+                <hr style="margin: 10px 0;">
+                <p style="color: #e74c3c;"><i class="fas fa-exclamation-triangle"></i> <strong>Note:</strong> Use CUU001 (NOT STU001) for student login</p>
             </div>
         </div>
     </div>
 
-    <!-- Photo Upload Modal -->
     <div id="photoModal" class="modal">
         <div class="modal-content">
             <h3><i class="fas fa-camera"></i> Upload Profile Photo</h3>
@@ -505,7 +501,6 @@
         </div>
     </div>
 
-    <!-- Main Application Container -->
     <div id="appContainer" style="display: none;">
         <nav class="navbar">
             <div class="nav-brand">
@@ -521,19 +516,16 @@
     </div>
 
     <script>
-        // Format currency in UGX
         function formatUGX(amount) {
             return 'UGX ' + amount.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
         }
 
-        // Generate random avatar colors based on name
         function getInitialAvatar(name) {
             const colors = ['#667eea', '#764ba2', '#f39c12', '#e74c3c', '#27ae60', '#3498db'];
             const index = name.length % colors.length;
             return colors[index];
         }
 
-        // ============= DATABASE (LocalStorage) =============
         function initDatabase() {
             if (!localStorage.getItem('universityDB')) {
                 const initialData = {
@@ -581,50 +573,20 @@
             localStorage.setItem('universityDB', JSON.stringify(data));
         }
 
-        // Global variables
         let currentUser = null;
-
-        // Initialize database
         initDatabase();
 
-        // ============= HELPER FUNCTIONS =============
         function calculateGPA(studentId) {
             const db = getDB();
             const studentResults = db.results.filter(r => {
                 const enrollment = db.enrollments.find(e => e.enrollment_id === r.enrollment_id);
                 return enrollment && enrollment.student_id === studentId;
             });
-            
             if (studentResults.length === 0) return '0.00';
-            
             const gradePoints = { 'A': 4.0, 'B': 3.0, 'C': 2.0, 'D': 1.0, 'F': 0.0 };
             let totalPoints = 0;
-            
-            studentResults.forEach(result => {
-                const points = gradePoints[result.grade] || 0;
-                totalPoints += points;
-            });
-            
+            studentResults.forEach(result => { totalPoints += gradePoints[result.grade] || 0; });
             return (totalPoints / studentResults.length).toFixed(2);
-        }
-
-        function calculateCompletedCredits(studentId) {
-            const db = getDB();
-            const studentResults = db.results.filter(r => {
-                const enrollment = db.enrollments.find(e => e.enrollment_id === r.enrollment_id);
-                return enrollment && enrollment.student_id === studentId && r.grade !== 'F';
-            });
-            
-            let totalCredits = 0;
-            studentResults.forEach(result => {
-                const enrollment = db.enrollments.find(e => e.enrollment_id === result.enrollment_id);
-                const course = db.courses.find(c => c.course_code === enrollment.course_code);
-                if (course && result.grade !== 'F') {
-                    totalCredits += course.credits;
-                }
-            });
-            
-            return totalCredits;
         }
 
         function calculateOutstandingBalance() {
@@ -632,10 +594,8 @@
             return db.fees.reduce((sum, fee) => sum + (fee.total_fees - fee.paid_amount), 0);
         }
 
-        // ============= AUTHENTICATION =============
         document.getElementById('loginForm')?.addEventListener('submit', (e) => {
             e.preventDefault();
-            
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const db = getDB();
@@ -648,7 +608,7 @@
                 document.getElementById('appContainer').style.display = 'block';
                 showDashboard(user.role);
             } else {
-                document.getElementById('loginError').textContent = 'Invalid username or password';
+                document.getElementById('loginError').innerHTML = 'Invalid username or password<br><small>Use CUU001 for student (NOT STU001)</small>';
             }
         });
 
@@ -659,6 +619,7 @@
             document.getElementById('appContainer').style.display = 'none';
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
+            document.getElementById('loginError').innerHTML = '';
         }
 
         function showDashboard(role) {
@@ -675,7 +636,6 @@
             }
         }
 
-        // ============= STUDENT DASHBOARD WITH PHOTO =============
         function showStudentDashboard(container) {
             const db = getDB();
             const student = db.students.find(s => s.user_id === currentUser.user_id);
@@ -686,7 +646,6 @@
             const enrolledCourses = db.enrollments.filter(e => e.student_id === student.student_id);
             const availableCourses = db.courses.filter(c => !enrolledCourses.some(e => e.course_code === c.course_code));
             
-            // Get student photo or use default
             const studentPhoto = student.photo || null;
             const avatarColor = getInitialAvatar(student.full_name);
             const initials = student.full_name.split(' ').map(n => n[0]).join('').toUpperCase();
@@ -694,15 +653,8 @@
             container.innerHTML = `
                 <div class="student-profile-card">
                     <div class="student-avatar" onclick="openPhotoModal()">
-                        ${studentPhoto ? 
-                            `<img src="${studentPhoto}" alt="${student.full_name}">` : 
-                            `<div style="width:100%;height:100%;background:${avatarColor};display:flex;align-items:center;justify-content:center;border-radius:50%;">
-                                <span style="font-size:48px;color:white;font-weight:bold;">${initials}</span>
-                             </div>`
-                        }
-                        <div class="camera-icon" onclick="event.stopPropagation();openPhotoModal()">
-                            <i class="fas fa-camera" style="font-size: 16px; color: white;"></i>
-                        </div>
+                        ${studentPhoto ? `<img src="${studentPhoto}" alt="${student.full_name}">` : `<div style="width:100%;height:100%;background:${avatarColor};display:flex;align-items:center;justify-content:center;border-radius:50%;"><span style="font-size:48px;color:white;font-weight:bold;">${initials}</span></div>`}
+                        <div class="camera-icon" onclick="event.stopPropagation();openPhotoModal()"><i class="fas fa-camera" style="font-size: 16px; color: white;"></i></div>
                     </div>
                     <div class="student-info">
                         <h2><i class="fas fa-user-graduate"></i> ${student.full_name}</h2>
@@ -711,320 +663,157 @@
                         <p><i class="fas fa-calendar"></i> Admission Year: ${student.admission_year}</p>
                         <p><i class="fas fa-envelope"></i> Email: ${student.email}</p>
                         <p><i class="fas fa-phone"></i> Phone: ${student.phone}</p>
-                        <p><i class="fas fa-map-marker-alt"></i> Address: ${student.address}</p>
-                        <button onclick="openPhotoModal()" class="btn-secondary" style="margin-top: 10px; background: rgba(255,255,255,0.2);">
-                            <i class="fas fa-camera"></i> Update Profile Photo
-                        </button>
+                        <button onclick="openPhotoModal()" class="btn-secondary" style="margin-top: 10px; background: rgba(255,255,255,0.2);"><i class="fas fa-camera"></i> Update Photo</button>
                     </div>
                 </div>
-                
                 <div class="stats-grid">
-                    <div class="stat-card"><i class="fas fa-dollar-sign"></i><h3>Fee Balance</h3><div class="number" style="color:${balance>0?'#e74c3c':'#27ae60'}">${formatUGX(balance)}</div><small>Total Fees: ${formatUGX(fee?.total_fees || 0)}</small></div>
+                    <div class="stat-card"><i class="fas fa-dollar-sign"></i><h3>Fee Balance</h3><div class="number" style="color:${balance>0?'#e74c3c':'#27ae60'}">${formatUGX(balance)}</div><small>Total: ${formatUGX(fee?.total_fees || 0)}</small></div>
                     <div class="stat-card"><i class="fas fa-chart-line"></i><h3>Current GPA</h3><div class="number">${calculateGPA(student.student_id)}</div></div>
                     <div class="stat-card"><i class="fas fa-book"></i><h3>Enrolled Courses</h3><div class="number">${enrolledCourses.length}</div></div>
                     <div class="stat-card"><i class="fas fa-credit-card"></i><h3>Amount Paid</h3><div class="number">${formatUGX(fee?.paid_amount || 0)}</div></div>
                 </div>
-                
-                <div class="form-card"><h3><i class="fas fa-plus-circle"></i> Course Registration</h3><div id="availableCourses"></div><button onclick="registerCourses('${student.student_id}')" class="btn-primary" style="margin-top:15px;">Register Selected Courses</button></div>
-                <div class="data-table"><h3><i class="fas fa-calendar-alt"></i> My Enrolled Courses</h3><div id="myCourses"></div></div>
-                <div class="data-table"><h3><i class="fas fa-graduation-cap"></i> My Results</h3><div id="myResults"></div></div>
+                <div class="form-card"><h3><i class="fas fa-plus-circle"></i> Course Registration</h3><div id="availableCourses"></div><button onclick="registerCourses('${student.student_id}')" class="btn-primary">Register Selected Courses</button></div>
+                <div class="data-table"><h3>My Enrolled Courses</h3><div id="myCourses"></div></div>
+                <div class="data-table"><h3>My Results</h3><div id="myResults"></div></div>
             `;
             
-            // Available courses with UGX warning
-            const coursesHtml = `<table><thead><tr><th><input type="checkbox" id="selectAll" onchange="toggleAllCourses(this)"></th><th>Code</th><th>Course Name</th><th>Credits</th><th>Dept</th></tr></thead><tbody>${availableCourses.map(c => `<tr><td><input type="checkbox" class="course-checkbox" value="${c.course_code}" ${balance>500000?'disabled':''}></td><td>${c.course_code}</td><td>${c.course_name}</td
-><td>${c.credits}</td><td>${c.department}</td></tr>`).join('')}</tbody></table>${balance>500000?'<div class="alert alert-error">⚠️ Please clear your fee balance (over UGX 500,000) to register for courses.</div>':''}`;
+            const coursesHtml = `<table><thead><tr><th><input type="checkbox" id="selectAll" onchange="toggleAllCourses(this)"></th><th>Code</th><th>Course Name</th><th>Credits</th><th>Dept</th></tr></thead><tbody>${availableCourses.map(c => `<tr><td><input type="checkbox" class="course-checkbox" value="${c.course_code}" ${balance>500000?'disabled':''}></td><td>${c.course_code}</td><td>${c.course_name}</td><td>${c.credits}</td><td>${c.department}</td></tr>`).join('')}</tbody></table>${balance>500000?'<div class="alert alert-error">⚠️ Please clear your fee balance (over UGX 500,000) to register for courses.</div>':''}`;
             document.getElementById('availableCourses').innerHTML = coursesHtml;
             
-            // Enrolled courses
-            document.getElementById('myCourses').innerHTML = `<table><thead><tr><th>Code</th><th>Course Name</th><th>Credits</th><th>Status</th></tr></thead><tbody>${enrolledCourses.map(e => { const c = db.courses.find(c => c.course_code === e.course_code); return `<tr><td>${c.course_code}</td><td>${c.course_name}</td
-><td>${c.credits}</td><td><span class="badge badge-success">${e.status}</span></td></tr>`; }).join('')}</tbody></table>`;
+            document.getElementById('myCourses').innerHTML = `<table><thead><tr><th>Code</th><th>Course Name</th><th>Credits</th><th>Status</th></tr></thead><tbody>${enrolledCourses.map(e => { const c = db.courses.find(c => c.course_code === e.course_code); return `<tr><td>${c.course_code}</td><td>${c.course_name}</td><td>${c.credits}</td><td><span class="badge badge-success">${e.status}</span></td></tr>`; }).join('')}</tbody></table>`;
             
-            // Results
             const studentResults = db.results.filter(r => { const en = db.enrollments.find(e => e.enrollment_id === r.enrollment_id); return en && en.student_id === student.student_id; });
-            document.getElementById('myResults').innerHTML = `<table><thead><tr><th>Course</th><th>Marks</th><th>Grade</th></tr></thead><tbody>${studentResults.map(r => { const en = db.enrollments.find(e => e.enrollment_id === r.enrollment_id); const c = db.courses.find(c => c.course_code === en.course_code); return `<tr><td>${c.course_name}</td
-><td>${r.marks}%</td
-><td><strong>${r.grade}</strong></td></tr>`; }).join('')}</tbody></table>`;
+            document.getElementById('myResults').innerHTML = `<table><thead><tr><th>Course</th><th>Marks</th><th>Grade</th></tr></thead><tbody>${studentResults.map(r => { const en = db.enrollments.find(e => e.enrollment_id === r.enrollment_id); const c = db.courses.find(c => c.course_code === en.course_code); return `<tr><td>${c.course_name}</td><td>${r.marks}%</td><td><strong>${r.grade}</strong></td></tr>`; }).join('')}</tbody></table>`;
         }
 
-        // Photo upload functions
-        function openPhotoModal() {
-            const modal = document.getElementById('photoModal');
-            modal.style.display = 'flex';
-        }
-
-        function closeModal() {
-            const modal = document.getElementById('photoModal');
-            modal.style.display = 'none';
-            document.getElementById('photoUpload').value = '';
-        }
-
+        function openPhotoModal() { document.getElementById('photoModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('photoModal').style.display = 'none'; document.getElementById('photoUpload').value = ''; }
+        
         function uploadPhoto() {
             const fileInput = document.getElementById('photoUpload');
             const file = fileInput.files[0];
-            
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const db = getDB();
                     const student = db.students.find(s => s.user_id === currentUser.user_id);
-                    if (student) {
-                        student.photo = e.target.result;
-                        saveDB(db);
-                        alert('✅ Profile photo updated successfully!');
-                        closeModal();
-                        showDashboard('student');
-                    }
+                    if (student) { student.photo = e.target.result; saveDB(db); alert('✅ Profile photo updated!'); closeModal(); showDashboard('student'); }
                 };
                 reader.readAsDataURL(file);
-            } else {
-                alert('Please select a photo to upload');
-            }
+            } else { alert('Please select a photo'); }
         }
 
-        function toggleAllCourses(checkbox) {
-            document.querySelectorAll('.course-checkbox').forEach(cb => cb.checked = checkbox.checked);
-        }
+        function toggleAllCourses(checkbox) { document.querySelectorAll('.course-checkbox').forEach(cb => cb.checked = checkbox.checked); }
 
         function registerCourses(studentId) {
             const db = getDB();
             const selectedCourses = Array.from(document.querySelectorAll('.course-checkbox:checked')).map(cb => cb.value);
             const fee = db.fees.find(f => f.student_id === studentId);
             const balance = fee ? (fee.total_fees - fee.paid_amount) : 0;
-            
-            if (balance > 500000) { alert('❌ Cannot register: Please clear your fee balance first (Balance over UGX 500,000)'); return; }
-            if (selectedCourses.length === 0) { alert('⚠️ Please select at least one course'); return; }
-            
+            if (balance > 500000) { alert('❌ Cannot register: Balance over UGX 500,000'); return; }
+            if (selectedCourses.length === 0) { alert('⚠️ Please select a course'); return; }
             selectedCourses.forEach(courseCode => {
                 if (!db.enrollments.find(e => e.student_id === studentId && e.course_code === courseCode)) {
-                    db.enrollments.push({
-                        enrollment_id: db.enrollments.length + 1,
-                        student_id: studentId,
-                        course_code: courseCode,
-                        semester: 'Fall',
-                        academic_year: '2024',
-                        enrollment_date: new Date().toISOString().split('T')[0],
-                        status: 'enrolled',
-                        fee_cleared: false
-                    });
+                    db.enrollments.push({ enrollment_id: db.enrollments.length + 1, student_id: studentId, course_code: courseCode, semester: 'Fall', academic_year: '2024', enrollment_date: new Date().toISOString().split('T')[0], status: 'enrolled', fee_cleared: false });
                     const course = db.courses.find(c => c.course_code === courseCode);
                     if (course) course.enrolled_count++;
                 }
             });
             saveDB(db);
-            alert(`✅ Successfully registered for ${selectedCourses.length} course(s)!`);
+            alert(`✅ Registered for ${selectedCourses.length} course(s)!`);
             location.reload();
         }
 
-        // ============= ADMIN DASHBOARD =============
         function showAdminDashboard(container) {
             const db = getDB();
-            const totalStudents = db.students.length;
-            const totalCourses = db.courses.length;
-            const totalLecturers = db.users.filter(u => u.role === 'lecturer').length;
-            const totalRevenue = db.payments.reduce((sum, p) => sum + p.amount, 0);
-            
-            container.innerHTML = `
-                <div class="dashboard-header">
-                    <h2><i class="fas fa-chart-line"></i> Admin Dashboard</h2>
-                    <p>Welcome, ${currentUser.full_name}!</p>
-                </div>
+            container.innerHTML = `<div class="dashboard-header"><h2><i class="fas fa-chart-line"></i> Admin Dashboard</h2><p>Welcome, ${currentUser.full_name}!</p></div>
                 <div class="stats-grid">
-                    <div class="stat-card"><i class="fas fa-users"></i><h3>Total Students</h3><div class="number">${totalStudents}</div></div>
-                    <div class="stat-card"><i class="fas fa-book"></i><h3>Active Courses</h3><div class="number">${totalCourses}</div></div>
-                    <div class="stat-card"><i class="fas fa-chalkboard-user"></i><h3>Total Lecturers</h3><div class="number">${totalLecturers}</div></div>
-                    <div class="stat-card"><i class="fas fa-dollar-sign"></i><h3>Total Revenue</h3><div class="number">${formatUGX(totalRevenue)}</div></div>
+                    <div class="stat-card"><i class="fas fa-users"></i><h3>Total Students</h3><div class="number">${db.students.length}</div></div>
+                    <div class="stat-card"><i class="fas fa-book"></i><h3>Active Courses</h3><div class="number">${db.courses.length}</div></div>
+                    <div class="stat-card"><i class="fas fa-chalkboard-user"></i><h3>Lecturers</h3><div class="number">${db.users.filter(u=>u.role==='lecturer').length}</div></div>
+                    <div class="stat-card"><i class="fas fa-dollar-sign"></i><h3>Revenue</h3><div class="number">${formatUGX(db.payments.reduce((s,p)=>s+p.amount,0))}</div></div>
                 </div>
-                <div class="form-card">
-                    <h3><i class="fas fa-chart-bar"></i> Generate Management Report</h3>
-                    <div class="form-group">
-                        <label>Report Type</label>
-                        <select id="reportType">
-                            <option value="enrollment">Enrollment Statistics Report</option>
-                            <option value="finance">Financial Summary Report</option>
-                            <option value="academic">Academic Performance Report</option>
-                        </select>
-                    </div>
-                    <button onclick="generateAdminReport()" class="btn-primary"><i class="fas fa-download"></i> Generate Report</button>
-                    <div id="reportResult" style="margin-top: 20px;"></div>
-                </div>
-                <div class="data-table">
-                    <h3><i class="fas fa-chart-line"></i> Recent System Activity</h3>
-                    <div id="recentActivity"></div>
-                </div>
-            `;
-            loadRecentActivity();
+                <div class="form-card"><h3>Generate Report</h3><select id="reportType"><option value="enrollment">Enrollment Report</option><option value="finance">Financial Report</option></select><button onclick="generateAdminReport()" class="btn-primary">Generate</button><div id="reportResult"></div></div>`;
         }
 
         function generateAdminReport() {
             const db = getDB();
-            const reportType = document.getElementById('reportType').value;
-            let reportContent = '';
-            
-            if (reportType === 'enrollment') {
-                const enrollmentByProgram = {};
-                db.students.forEach(s => { enrollmentByProgram[s.program] = (enrollmentByProgram[s.program] || 0) + 1; });
-                reportContent = `<div class="alert alert-info"><h4>📊 Enrollment Statistics Report</h4><p>Total Students: ${db.students.length}</p><p>Total Courses: ${db.courses.length}</p><p>Enrollments by Program:</p><ul>${Object.entries(enrollmentByProgram).map(([program, count]) => `<li>${program}: ${count} students</li>`).join('')}</ul></div>`;
-            } else if (reportType === 'finance') {
-                const totalCollected = db.payments.reduce((sum, p) => sum + p.amount, 0);
-                const outstanding = calculateOutstandingBalance();
-                reportContent = `<div class="alert alert-info"><h4>💰 Financial Summary Report (UGX)</h4><p>Total Fees Collected: ${formatUGX(totalCollected)}</p><p>Outstanding Balance: ${formatUGX(outstanding)}</p><p>Collection Rate: ${((totalCollected / (totalCollected + outstanding)) * 100).toFixed(1)}%</p></div>`;
+            const type = document.getElementById('reportType').value;
+            if (type === 'enrollment') {
+                const byProgram = {};
+                db.students.forEach(s => byProgram[s.program] = (byProgram[s.program]||0)+1);
+                document.getElementById('reportResult').innerHTML = `<div class="alert alert-info"><h4>Enrollment Report</h4><p>Total: ${db.students.length}</p><ul>${Object.entries(byProgram).map(([p,c])=>`<li>${p}: ${c}</li>`).join('')}</ul></div>`;
             } else {
-                const totalResults = db.results.length;
-                const avgMarks = totalResults > 0 ? (db.results.reduce((sum, r) => sum + r.marks, 0) / totalResults).toFixed(2) : 0;
-                reportContent = `<div class="alert alert-info"><h4>📚 Academic Performance Report</h4><p>Total Results Submitted: ${totalResults}</p><p>Average Marks: ${avgMarks}%</p><p>Grade Distribution: A:${db.results.filter(r=>r.grade==='A').length} B:${db.results.filter(r=>r.grade==='B').length} C:${db.results.filter(r=>r.grade==='C').length} D:${db.results.filter(r=>r.grade==='D').length} F:${db.results.filter(r=>r.grade==='F').length}</p></div>`;
+                const collected = db.payments.reduce((s,p)=>s+p.amount,0);
+                document.getElementById('reportResult').innerHTML = `<div class="alert alert-info"><h4>Financial Report</h4><p>Collected: ${formatUGX(collected)}<br>Outstanding: ${formatUGX(calculateOutstandingBalance())}</p></div>`;
             }
-            document.getElementById('reportResult').innerHTML = reportContent;
         }
 
-        function loadRecentActivity() {
-            const db = getDB();
-            const activities = [];
-            const recentStudents = [...db.students].slice(-3);
-            recentStudents.forEach(s => activities.push(`📝 New student registered: ${s.full_name} (${s.student_id})`));
-            const recentPayments = [...db.payments].slice(-3);
-            recentPayments.forEach(p => activities.push(`💰 Payment received: ${formatUGX(p.amount)} from ${p.student_id}`));
-            document.getElementById('recentActivity').innerHTML = `<div style="padding:20px;"><ul style="list-style:none;">${activities.map(a => `<li style="padding:8px 0;"><i class="fas fa-circle" style="font-size:8px;color:#667eea;margin-right:10px;"></i>${a}</li>`).join('')}</ul></div>`;
-        }
-
-        // ============= LECTURER DASHBOARD =============
         function showLecturerDashboard(container) {
             const db = getDB();
-            const lecturerCourses = db.courses.filter(c => c.lecturer_id === currentUser.user_id);
-            
-            container.innerHTML = `
-                <div class="dashboard-header"><h2><i class="fas fa-chalkboard-user"></i> Lecturer Dashboard</h2><p>Manage Course Results</p></div>
-                <div class="form-card">
-                    <h3><i class="fas fa-upload"></i> Submit Student Results</h3>
-                    <div class="form-group"><label>Select Course</label><select id="courseSelect" onchange="loadCourseStudents()"><option value="">-- Select Course --</option>${lecturerCourses.map(c => `<option value="${c.course_code}">${c.course_name} (${c.course_code})</option>`).join('')}</select></div>
-                    <div id="studentsList"></div>
-                    <button onclick="submitResults()" class="btn-primary">Submit Results</button>
-                </div>
-                <div class="data-table"><h3>Course Performance</h3><div id="performanceSummary"></div></div>
-            `;
-            loadPerformanceSummary(lecturerCourses);
+            const courses = db.courses.filter(c => c.lecturer_id === currentUser.user_id);
+            container.innerHTML = `<div class="dashboard-header"><h2><i class="fas fa-chalkboard-user"></i> Lecturer Dashboard</h2></div>
+                <div class="form-card"><h3>Submit Results</h3><select id="courseSelect" onchange="loadCourseStudents()"><option value="">Select Course</option>${courses.map(c=>`<option value="${c.course_code}">${c.course_name}</option>`).join('')}</select><div id="studentsList"></div><button onclick="submitResults()" class="btn-primary">Submit</button></div>`;
         }
 
         function loadCourseStudents() {
             const db = getDB();
             const courseCode = document.getElementById('courseSelect').value;
-            if (!courseCode) return;
-            
+            if(!courseCode) return;
             const enrollments = db.enrollments.filter(e => e.course_code === courseCode);
-            document.getElementById('studentsList').innerHTML = enrollments.map(enrollment => {
-                const student = db.students.find(s => s.student_id === enrollment.student_id);
-                const existingResult = db.results.find(r => r.enrollment_id === enrollment.enrollment_id);
-                return `<div style="border:1px solid #ddd;padding:15px;margin-bottom:10px;border-radius:8px;">
-                            <strong>${student.full_name}</strong> (${student.student_id})<br>
-                            <label>Marks (0-100):</label>
-                            <input type="number" id="marks_${enrollment.enrollment_id}" value="${existingResult ? existingResult.marks : ''}" min="0" max="100" step="0.01" onchange="updateGrade(${enrollment.enrollment_id})">
-                            <label>Grade:</label>
-                            <input type="text" id="grade_${enrollment.enrollment_id}" value="${existingResult ? existingResult.grade : ''}" readonly>
-                        </div>`;
+            document.getElementById('studentsList').innerHTML = enrollments.map(e => {
+                const s = db.students.find(st => st.student_id === e.student_id);
+                const r = db.results.find(res => res.enrollment_id === e.enrollment_id);
+                return `<div style="border:1px solid #ddd;padding:15px;margin-bottom:10px"><strong>${s.full_name}</strong> (${s.student_id})<br>
+                    <label>Marks:</label><input type="number" id="marks_${e.enrollment_id}" value="${r?r.marks:''}" min="0" max="100" onchange="updateGrade(${e.enrollment_id})">
+                    <label>Grade:</label><input type="text" id="grade_${e.enrollment_id}" value="${r?r.grade:''}" readonly></div>`;
             }).join('');
         }
 
-        function updateGrade(enrollmentId) {
-            const marksInput = document.getElementById(`marks_${enrollmentId}`);
-            const gradeInput = document.getElementById(`grade_${enrollmentId}`);
-            const marks = parseFloat(marksInput.value);
-            if (!isNaN(marks)) {
-                if (marks >= 80) gradeInput.value = 'A';
-                else if (marks >= 70) gradeInput.value = 'B';
-                else if (marks >= 60) gradeInput.value = 'C';
-                else if (marks >= 50) gradeInput.value = 'D';
-                else gradeInput.value = 'F';
-            }
+        function updateGrade(id) {
+            const marks = parseFloat(document.getElementById(`marks_${id}`).value);
+            const grade = document.getElementById(`grade_${id}`);
+            if(!isNaN(marks)) grade.value = marks>=80?'A':marks>=70?'B':marks>=60?'C':marks>=50?'D':'F';
         }
 
         function submitResults() {
             const db = getDB();
             const courseCode = document.getElementById('courseSelect').value;
-            if (!courseCode) { alert('Please select a course'); return; }
-            
             const enrollments = db.enrollments.filter(e => e.course_code === courseCode);
-            let submitted = 0;
-            
-            enrollments.forEach(enrollment => {
-                const marksInput = document.getElementById(`marks_${enrollment.enrollment_id}`);
-                const gradeInput = document.getElementById(`grade_${enrollment.enrollment_id}`);
-                if (marksInput && marksInput.value) {
-                    const existingIndex = db.results.findIndex(r => r.enrollment_id === enrollment.enrollment_id);
-                    const result = {
-                        result_id: db.results.length + 1,
-                        enrollment_id: enrollment.enrollment_id,
-                        lecturer_id: currentUser.user_id,
-                        marks: parseFloat(marksInput.value),
-                        grade: gradeInput.value,
-                        submission_date: new Date().toISOString().split('T')[0],
-                        status: 'submitted'
-                    };
-                    if (existingIndex >= 0) db.results[existingIndex] = result;
-                    else db.results.push(result);
-                    submitted++;
+            enrollments.forEach(e => {
+                const marks = parseFloat(document.getElementById(`marks_${e.enrollment_id}`)?.value);
+                if(!isNaN(marks)) {
+                    const grade = document.getElementById(`grade_${e.enrollment_id}`).value;
+                    const idx = db.results.findIndex(r => r.enrollment_id === e.enrollment_id);
+                    const result = { result_id: db.results.length+1, enrollment_id: e.enrollment_id, lecturer_id: currentUser.user_id, marks, grade, submission_date: new Date().toISOString().split('T')[0], status: 'submitted' };
+                    if(idx>=0) db.results[idx]=result; else db.results.push(result);
                 }
             });
             saveDB(db);
-            alert(`✅ Successfully submitted ${submitted} result(s)`);
+            alert('Results submitted!');
             location.reload();
         }
 
-        function loadPerformanceSummary(lecturerCourses) {
-            const db = getDB();
-            document.getElementById('performanceSummary').innerHTML = `<table><thead><th>Course</th><th>Enrolled</th><th>Avg Marks</th></thead><tbody>${lecturerCourses.map(c => {
-                const enrollments = db.enrollments.filter(e => e.course_code === c.course_code);
-                const results = db.results.filter(r => { const en = db.enrollments.find(e => e.enrollment_id === r.enrollment_id); return en && en.course_code === c.course_code; });
-                const avg = results.length > 0 ? (results.reduce((s,r)=>s+r.marks,0)/results.length).toFixed(2) : 'N/A';
-                return `<tr><td>${c.course_name}</td><td>${enrollments.length}</td
-><td>${avg}%</td
-></tr>`;
-            }).join('')}</tbody></table>`;
-        }
-
-        // ============= FINANCE DASHBOARD =============
         function showFinanceDashboard(container) {
             const db = getDB();
-            const totalCollected = db.payments.reduce((sum, p) => sum + p.amount, 0);
-            const outstanding = calculateOutstandingBalance();
-            
-            container.innerHTML = `
-                <div class="dashboard-header"><h2><i class="fas fa-coins"></i> Finance Dashboard (UGX)</h2></div>
-                <div class="stats-grid">
-                    <div class="stat-card"><i class="fas fa-dollar-sign"></i><h3>Total Collected</h3><div class="number">${formatUGX(totalCollected)}</div></div>
-                    <div class="stat-card"><i class="fas fa-credit-card"></i><h3>Outstanding</h3><div class="number" style="color:#e74c3c;">${formatUGX(outstanding)}</div></div>
-                </div>
-                <div class="form-card">
-                    <h3>Search Student</h3>
-                    <div class="form-group"><input type="text" id="studentSearch" placeholder="Enter Student ID or Name"><button onclick="searchStudentFinance()" class="btn-primary">Search</button></div>
-                    <div id="studentInfo"></div>
-                </div>
-                <div class="form-card">
-                    <h3>Record Payment (UGX)</h3>
-                    <div id="paymentForm" style="display:none;">
-                        <div class="form-group"><label>Student ID</label><input type="text" id="paymentStudentId" readonly></div>
-                        <div class="form-group"><label>Amount (UGX)</label><input type="number" id="paymentAmount" placeholder="Enter amount in UGX"></div>
-                        <div class="form-group"><label>Method</label><select id="paymentMethod"><option value="cash">Cash</option><option value="bank_transfer">Bank Transfer</option><option value="card">Card</option><option value="mobile_money">Mobile Money</option></select></div>
-                        <button onclick="recordPaymentFinance()" class="btn-primary">Process Payment</button>
-                    </div>
-                </div>
-                <div class="data-table"><h3>Recent Payments</h3><div id="recentPayments"></div></div>
-            `;
-            loadRecentPaymentsFinance();
+            container.innerHTML = `<div class="dashboard-header"><h2><i class="fas fa-coins"></i> Finance Dashboard (UGX)</h2></div>
+                <div class="stats-grid"><div class="stat-card"><i class="fas fa-dollar-sign"></i><h3>Total Collected</h3><div class="number">${formatUGX(db.payments.reduce((s,p)=>s+p.amount,0))}</div></div>
+                <div class="stat-card"><i class="fas fa-credit-card"></i><h3>Outstanding</h3><div class="number" style="color:#e74c3c">${formatUGX(calculateOutstandingBalance())}</div></div></div>
+                <div class="form-card"><h3>Search Student</h3><input type="text" id="studentSearch" placeholder="Enter CUU001 or Name"><button onclick="searchStudentFinance()" class="btn-primary">Search</button><div id="studentInfo"></div></div>
+                <div class="form-card"><h3>Record Payment</h3><div id="paymentForm" style="display:none"><input type="text" id="paymentStudentId" readonly><input type="number" id="paymentAmount" placeholder="Amount in UGX"><select id="paymentMethod"><option>Cash</option><option>Bank Transfer</option></select><button onclick="recordPaymentFinance()" class="btn-primary">Process</button></div></div>`;
         }
 
         function searchStudentFinance() {
             const db = getDB();
-            const searchTerm = document.getElementById('studentSearch').value.toLowerCase();
-            const student = db.students.find(s => s.student_id.toLowerCase().includes(searchTerm) || s.full_name.toLowerCase().includes(searchTerm));
-            
-            if (student) {
+            const term = document.getElementById('studentSearch').value.toLowerCase();
+            const student = db.students.find(s => s.student_id.toLowerCase().includes(term) || s.full_name.toLowerCase().includes(term));
+            if(student) {
                 const fee = db.fees.find(f => f.student_id === student.student_id);
                 const balance = fee ? (fee.total_fees - fee.paid_amount) : 0;
-                document.getElementById('studentInfo').innerHTML = `<div class="alert alert-info"><strong>Student Found:</strong><br>ID: ${student.student_id}<br>Name: ${student.full_name}<br>Program: ${student.program}<br>Total Fees: ${formatUGX(fee?.total_fees || 0)}<br>Paid: ${formatUGX(fee?.paid_amount || 0)}<br><strong>Balance: ${formatUGX(balance)}</strong></div>`;
+                document.getElementById('studentInfo').innerHTML = `<div class="alert alert-info"><strong>${student.full_name}</strong> (${student.student_id})<br>Balance: ${formatUGX(balance)}</div>`;
                 document.getElementById('paymentForm').style.display = 'block';
                 document.getElementById('paymentStudentId').value = student.student_id;
-            } else {
-                document.getElementById('studentInfo').innerHTML = '<div class="alert alert-error">Student not found</div>';
-            }
+            } else { document.getElementById('studentInfo').innerHTML = '<div class="alert alert-error">Student not found. Use CUU001 format</div>'; }
         }
 
         function recordPaymentFinance() {
@@ -1032,113 +821,49 @@
             const studentId = document.getElementById('paymentStudentId').value;
             const amount = parseFloat(document.getElementById('paymentAmount').value);
             const method = document.getElementById('paymentMethod').value;
-            
-            if (!amount || amount <= 0) { alert('Please enter a valid amount in UGX'); return; }
-            
+            if(!amount || amount<=0) { alert('Enter valid amount'); return; }
             const fee = db.fees.find(f => f.student_id === studentId);
-            if (fee) {
+            if(fee) {
                 fee.paid_amount += amount;
-                db.payments.push({
-                    payment_id: db.payments.length + 1,
-                    student_id: studentId,
-                    amount: amount,
-                    payment_date: new Date().toISOString().split('T')[0],
-                    receipt_no: `RCP${Date.now()}`,
-                    payment_method: method,
-                    posted_by: currentUser.username
-                });
+                db.payments.push({ payment_id: db.payments.length+1, student_id: studentId, amount, payment_date: new Date().toISOString().split('T')[0], receipt_no: `RCP${Date.now()}`, payment_method: method, posted_by: currentUser.username });
                 saveDB(db);
-                alert(`✅ Payment of ${formatUGX(amount)} recorded successfully!`);
+                alert(`✅ Payment of ${formatUGX(amount)} recorded!`);
                 location.reload();
             }
         }
 
-        function loadRecentPaymentsFinance() {
-            const db = getDB();
-            const recentPayments = [...db.payments].reverse().slice(0,5);
-            document.getElementById('recentPayments').innerHTML = `<table><thead><th>Receipt</th><th>Student</th><th>Amount (UGX)</th><th>Date</th></thead><tbody>${recentPayments.map(p => `<tr><td>${p.receipt_no}</td><td>${p.student_id}</td><td>${formatUGX(p.amount)}</td><td>${p.payment_date}</td></tr>`).join('')}</tbody></table>`;
-        }
-
-        // ============= REGISTRY DASHBOARD =============
         function showRegistryDashboard(container) {
-            const db = getDB();
-            container.innerHTML = `
-                <div class="dashboard-header"><h2><i class="fas fa-clipboard-list"></i> Registry Dashboard</h2><p>Manage Student Registration (CUU Format)</p></div>
-                <div class="form-card">
-                    <h3>Register New Student (CUU Format)</h3>
-                    <div class="form-group"><label>Student ID (Format: CUUxxx)</label><input type="text" id="newStudentId" placeholder="e.g., CUU003"></div>
-                    <div class="form-group"><label>Full Name</label><input type="text" id="newStudentName" placeholder="Full Name"></div>
-                    <div class="form-group"><label>Email</label><input type="email" id="newStudentEmail" placeholder="Email"></div>
-                    <div class="form-group"><label>Phone</label><input type="text" id="newStudentPhone" placeholder="Phone Number"></div>
-                    <div class="form-group"><label>Program</label><select id="newStudentProgram"><option>Computer Science</option><option>Business Administration</option><option>Engineering</option></select></div>
-                    <div class="form-group"><label>Admission Year</label><input type="number" id="newStudentYear" value="2024"></div>
-                    <button onclick="registerNewStudentRegistry()" class="btn-primary">Register Student</button>
-                </div>
-                <div class="data-table"><h3>All Students (CUU Format)</h3><div id="allStudents"></div></div>
-            `;
-            loadAllStudentsRegistry();
+            container.innerHTML = `<div class="dashboard-header"><h2><i class="fas fa-clipboard-list"></i> Registry Dashboard</h2><p>Register new students (CUU format)</p></div>
+                <div class="form-card"><h3>Register New Student</h3><input type="text" id="newStudentId" placeholder="CUU003"><input type="text" id="newStudentName" placeholder="Full Name"><input type="email" id="newStudentEmail" placeholder="Email"><input type="text" id="newStudentPhone" placeholder="Phone"><select id="newStudentProgram"><option>Computer Science</option><option>Business</option></select><button onclick="registerNewStudent()" class="btn-primary">Register</button></div>
+                <div class="data-table"><h3>All Students</h3><div id="allStudents"></div></div>`;
+            loadAllStudents();
         }
 
-        function registerNewStudentRegistry() {
+        function registerNewStudent() {
             const db = getDB();
-            const studentId = document.getElementById('newStudentId').value.toUpperCase();
-            const fullName = document.getElementById('newStudentName').value;
+            const id = document.getElementById('newStudentId').value.toUpperCase();
+            const name = document.getElementById('newStudentName').value;
             const email = document.getElementById('newStudentEmail').value;
             const phone = document.getElementById('newStudentPhone').value;
             const program = document.getElementById('newStudentProgram').value;
-            const year = document.getElementById('newStudentYear').value;
-            
-            if (!studentId || !fullName || !email) { alert('Please fill all required fields'); return; }
-            
-            // Validate CUU format
-            if (!studentId.startsWith('CUU')) {
-                alert('Student ID must start with CUU (e.g., CUU003)');
-                return;
-            }
-            
-            const newUserId = db.users.length + 1;
-            db.users.push({ user_id: newUserId, username: studentId, password: 'student123', role: 'student', full_name: fullName, email: email });
-            db.students.push({ 
-                student_id: studentId, 
-                user_id: newUserId, 
-                full_name: fullName, 
-                date_of_birth: '2000-01-01', 
-                program: program, 
-                admission_year: parseInt(year), 
-                email: email, 
-                phone: phone, 
-                address: 'Kampala, Uganda',
-                photo: null 
-            });
-            db.fees.push({ fee_id: db.fees.length + 1, student_id: studentId, semester: 'Fall', academic_year: '2024', total_fees: 2500000, paid_amount: 0, due_date: '2024-09-30' });
+            if(!id.startsWith('CUU')) { alert('ID must start with CUU'); return; }
+            if(!id || !name || !email) { alert('Fill all fields'); return; }
+            const newId = db.users.length+1;
+            db.users.push({ user_id: newId, username: id, password: 'student123', role: 'student', full_name: name, email });
+            db.students.push({ student_id: id, user_id: newId, full_name: name, date_of_birth: '2000-01-01', program, admission_year: 2024, email, phone, address: 'Kampala', photo: null });
+            db.fees.push({ fee_id: db.fees.length+1, student_id: id, semester: 'Fall', academic_year: '2024', total_fees: 2500000, paid_amount: 0, due_date: '2024-09-30' });
             saveDB(db);
-            alert(`✅ Student ${fullName} (${studentId}) registered successfully!\nDefault password: student123\nTuition Fee: ${formatUGX(2500000)} per semester`);
-            loadAllStudentsRegistry();
-            
-            // Clear form
-            document.getElementById('newStudentId').value = '';
-            document.getElementById('newStudentName').value = '';
-            document.getElementById('newStudentEmail').value = '';
-            document.getElementById('newStudentPhone').value = '';
+            alert(`✅ ${name} (${id}) registered! Password: student123`);
+            loadAllStudents();
         }
 
-        function loadAllStudentsRegistry() {
+        function loadAllStudents() {
             const db = getDB();
-            document.getElementById('allStudents').innerHTML = `<table><thead><th>ID</th><th>Name</th><th>Program</th><th>Email</th><th>Balance (UGX)</th></thead><tbody>${db.students.map(s => {
-                const fee = db.fees.find(f => f.student_id === s.student_id);
-                const balance = fee ? (fee.total_fees - fee.paid_amount) : 0;
-                return `<tr><td>${s.student_id}</td><td>${s.full_name}</td><td>${s.program}</td><td>${s.email}</td><td>${formatUGX(balance)}</td></tr>`;
-            }).join('')}</tbody></table>`;
+            document.getElementById('allStudents').innerHTML = `<table><thead><th>ID</th><th>Name</th><th>Program</th><th>Balance</th></thead><tbody>${db.students.map(s => { const f = db.fees.find(f=>f.student_id===s.student_id); const b = f ? (f.total_fees-f.paid_amount) : 0; return `<tr><td>${s.student_id}</td><td>${s.full_name}</td><td>${s.program}</td><td>${formatUGX(b)}</td></tr>`; }).join('')}</tbody></td>`;
         }
 
-        // Check for saved session
-        const savedUser = localStorage.getItem('currentUser');
-        if (savedUser) {
-            currentUser = JSON.parse(savedUser);
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('appContainer').style.display = 'block';
-            showDashboard(currentUser.role);
-        }
+        const saved = localStorage.getItem('currentUser');
+        if(saved) { currentUser = JSON.parse(saved); document.getElementById('loginContainer').style.display = 'none'; document.getElementById('appContainer').style.display = 'block'; showDashboard(currentUser.role); }
     </script>
 </body>
 </html>
